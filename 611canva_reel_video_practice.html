@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>実習：Canvaでリールを1本つくろう</title>
+<style>
+  :root {
+    --bg: #0a1109;
+    --surface: #111c0f;
+    --card: #152213;
+    --border: #243a20;
+    --accent: #a3e635;
+    --accent2: #4ade80;
+    --text: #eefbe5;
+    --text-sub: #a5c596;
+    --text-muted: #6a8458;
+    --step-num: #1c2e18;
+
+    --c-new:    #a3e635;
+    --c-cut:    #4ade80;
+    --c-speed:  #fbbf24;
+    --c-trans:  #2dd4bf;
+    --c-text:   #c084fc;
+    --c-timing: #38bdf8;
+    --c-anim:   #fb923c;
+    --c-voice:  #f472b6;
+    --c-music:  #818cf8;
+    --c-export: #84cc16;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(135deg, #16290f 0%, #0a1109 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(163,230,53,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(163,230,53,0.12);
+    border: 1px solid rgba(163,230,53,0.3);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: clamp(20px, 5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 13.5px;
+    color: var(--text-sub);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ─── GOAL + PREP ─── */
+  .meta-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 540px) {
+    .meta-section { grid-template-columns: 1fr; }
+  }
+  .meta-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .meta-card h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .goal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13.5px;
+    color: var(--text-sub);
+    margin-bottom: 7px;
+  }
+  .goal-item:last-child { margin-bottom: 0; }
+  .goal-check {
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .meta-card p { font-size: 13.5px; color: var(--text-sub); }
+  .meta-card .note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 0 5px 5px 0;
+  }
+
+  /* ─── PREP BOX ─── */
+  .prep-section {
+    max-width: 720px;
+    margin: 16px auto 0;
+    padding: 0 20px;
+  }
+  .prep-box {
+    background: linear-gradient(135deg, rgba(163,230,53,0.08), rgba(74,222,128,0.06));
+    border: 1px solid rgba(163,230,53,0.25);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .prep-text { flex: 1; min-width: 200px; }
+  .prep-text h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .prep-text p { font-size: 13px; color: var(--text-sub); }
+  .video-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(163,230,53,0.15);
+    border: 1px solid rgba(163,230,53,0.35);
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .video-btn:hover { background: rgba(163,230,53,0.28); }
+
+  /* ─── STEPS ─── */
+  .steps-area {
+    max-width: 720px;
+    margin: 36px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .step-card:hover { border-color: rgba(163,230,53,0.3); }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--step-num);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .step-title-block { flex: 1; }
+  .step-title {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+  .step-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .step-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  .badge-new    { background: rgba(163,230,53,0.12); color: var(--c-new);    border: 1px solid rgba(163,230,53,0.25); }
+  .badge-cut    { background: rgba(74,222,128,0.10); color: var(--c-cut);    border: 1px solid rgba(74,222,128,0.25); }
+  .badge-speed  { background: rgba(251,191,36,0.10); color: var(--c-speed);  border: 1px solid rgba(251,191,36,0.25); }
+  .badge-trans  { background: rgba(45,212,191,0.10); color: var(--c-trans);  border: 1px solid rgba(45,212,191,0.25); }
+  .badge-text   { background: rgba(192,132,252,0.10);color: var(--c-text);   border: 1px solid rgba(192,132,252,0.25); }
+  .badge-timing { background: rgba(56,189,248,0.10); color: var(--c-timing); border: 1px solid rgba(56,189,248,0.25); }
+  .badge-anim   { background: rgba(251,146,60,0.10); color: var(--c-anim);   border: 1px solid rgba(251,146,60,0.25); }
+  .badge-voice  { background: rgba(244,114,182,0.10);color: var(--c-voice);  border: 1px solid rgba(244,114,182,0.25); }
+  .badge-music  { background: rgba(129,140,248,0.10);color: var(--c-music);  border: 1px solid rgba(129,140,248,0.25); }
+  .badge-export { background: rgba(132,204,22,0.10); color: var(--c-export); border: 1px solid rgba(132,204,22,0.25); }
+
+  .step-card.new    { border-left: 3px solid var(--c-new); }
+  .step-card.cut    { border-left: 3px solid var(--c-cut); }
+  .step-card.speed  { border-left: 3px solid var(--c-speed); }
+  .step-card.trans  { border-left: 3px solid var(--c-trans); }
+  .step-card.text   { border-left: 3px solid var(--c-text); }
+  .step-card.timing { border-left: 3px solid var(--c-timing); }
+  .step-card.anim   { border-left: 3px solid var(--c-anim); }
+  .step-card.voice  { border-left: 3px solid var(--c-voice); }
+  .step-card.music  { border-left: 3px solid var(--c-music); }
+  .step-card.export { border-left: 3px solid var(--c-export); }
+
+  .step-body {
+    padding: 14px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step-desc { font-size: 13.5px; color: var(--text-sub); }
+
+  /* operations list */
+  .op-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .op-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+  }
+  .op-step-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(163,230,53,0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .op-text { font-size: 13.5px; color: var(--text-sub); }
+  .op-text b { color: var(--text); font-weight: 700; }
+
+  /* tip box */
+  .tip-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    color: var(--text-sub);
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+  }
+  .tip-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .tip-box b { color: var(--accent); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    max-width: 720px;
+    margin: 44px auto 0;
+    padding: 0 20px 48px;
+    text-align: center;
+  }
+  .footer hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .footer p { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Canva × Instagram リール動画編集</div>
+  <h1><span>Canva</span>でリールを<br>1本つくろう</h1>
+  <p class="hero-sub">動画のカット・速度・テロップ・音声まで、リール作りのひと通りをCanvaで体験します。短い動画なら十分作れます。</p>
+</div>
+
+<!-- GOAL + NOTE -->
+<div class="meta-section">
+  <div class="meta-card">
+    <h2>🎯 実習の目的</h2>
+    <div class="goal-item"><span class="goal-check">✓</span><span>CanvaでInstagramリール動画を1本完成させる</span></div>
+    <div class="goal-item"><span class="goal-check">✓</span><span>テンプレートを使って、短い動画制作の流れを体験する</span></div>
+  </div>
+  <div class="meta-card">
+    <h2>💡 進め方</h2>
+    <p>素材を並べ、カット・速度・テロップ・音を足していく流れです。編集画面が広いPCかタブレットがおすすめ。</p>
+    <div class="note">参考動画からアップデートで機能の場所が移動している場合があります。見つからない時は近くのメニューを探してみましょう。</div>
+  </div>
+</div>
+
+<!-- PREP -->
+<div class="prep-section">
+  <div class="prep-box">
+    <div class="prep-text">
+      <h2>事前準備</h2>
+      <p>① Canvaにログインしておく。② 編集画面の小さいスマホよりPCかタブレットがおすすめ。③ 自分の動画を使ってもOKですが、なければCanvaの「素材」内の動画で進められます。参考動画も手元で開いておきましょう。</p>
+    </div>
+    <a class="video-btn" href="https://youtu.be/fn9BRQpxr8c?si=-nElh0GcIAueJ_AQ&t=56" target="_blank">▶ 参考動画を開く</a>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-area">
+
+  <!-- ① 新規動画テンプレート -->
+  <div class="step-card new">
+    <div class="step-header">
+      <div class="step-num">01</div>
+      <div class="step-title-block">
+        <div class="step-title">動画テンプレートを開いて素材を配置</div>
+        <div class="step-subtitle">Instagramリール動画でスタート</div>
+      </div>
+      <span class="step-badge badge-new">準備・配置</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">動画編集をするときは、必ず<b>動画用のテンプレート</b>から始めます。通常のSNS投稿テンプレートだと細かい動画編集ができないので注意です。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">Canvaトップで <b>「動画」</b> のアイコンを選び、<b>「Instagramリール動画」</b>（1080×1920）を開く</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">左メニューの <b>「素材」</b> で「カフェ」と検索し、動画素材を探す</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">使いたい動画をクリックして、いくつか配置する（縦長で絞りたい時は「向き」で縦長を選択）</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">👑</span>
+        <span><b>注意：</b>王冠マーク付きは有料素材です。マークなしの無料素材を選んで進めましょう。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 分割・カット -->
+  <div class="step-card cut">
+    <div class="step-header">
+      <div class="step-num">02</div>
+      <div class="step-title-block">
+        <div class="step-title">動画を分割していらない部分を削除</div>
+        <div class="step-subtitle">必要なところだけ残す</div>
+      </div>
+      <span class="step-badge badge-cut">カット</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">下のバーの<b>インジケーター（再生位置の縦線）</b>を、切りたい場所まで動かす</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">右クリック →<b>「分割する」</b>（または<b>「S」キー</b>）で動画を2つに切る</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">いらない方を選んで <b>ゴミ箱ボタン</b> または Delete で削除する</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 速度 -->
+  <div class="step-card speed">
+    <div class="step-header">
+      <div class="step-num">03</div>
+      <div class="step-title-block">
+        <div class="step-title">再生速度を2倍速にする</div>
+        <div class="step-subtitle">リールはスピード感が大事</div>
+      </div>
+      <span class="step-badge badge-speed">速度調整</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">速くしたい動画を選択する</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">上に出る <b>「1倍」</b>（速度）をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">バーを <b>2倍</b> まで動かす（最大2倍速、ゆっくりは最小0.25倍）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ トランジション -->
+  <div class="step-card trans">
+    <div class="step-header">
+      <div class="step-num">04</div>
+      <div class="step-title-block">
+        <div class="step-title">動画のつなぎ目に切り替えを追加</div>
+        <div class="step-subtitle">トランジションでおしゃれに</div>
+      </div>
+      <span class="step-badge badge-trans">トランジション</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">動画と動画の<b>つなぎ目</b>にカーソルを合わせ、<b>「切り替えを追加」</b>をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">一覧から <b>「ディゾルブ」</b> を選ぶ（自然に切り替わるのでおすすめ）</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">必要なら長さを調整する</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">✨</span>
+        <span><b>ヒント：</b>迷ったら「ディゾルブ」か「スライド」が無難。種類を統一すると全体がまとまります。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ テキスト -->
+  <div class="step-card text">
+    <div class="step-header">
+      <div class="step-num">05</div>
+      <div class="step-title-block">
+        <div class="step-title">テキストを追加する</div>
+        <div class="step-subtitle">太字＋袋文字で見やすく</div>
+      </div>
+      <span class="step-badge badge-text">テロップ</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">左メニューの <b>「テキスト」</b> →「テキストボックスを追加」で文字を入れる</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">フォントを<b>太字</b>にする（おすすめに出た時に見やすい）</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text"><b>「エフェクト」→「袋文字」</b>を付け、文字色と縁の色を変えて見やすくする</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">📏</span>
+        <span><b>注意：</b>端ギリギリに文字を置くと、リール表示時に切れることがあります。左右の余白は余裕を持たせましょう。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 表示タイミング -->
+  <div class="step-card timing">
+    <div class="step-header">
+      <div class="step-num">06</div>
+      <div class="step-title-block">
+        <div class="step-title">テキストの表示タイミングを変える</div>
+        <div class="step-subtitle">出てくる順番を調整</div>
+      </div>
+      <span class="step-badge badge-timing">タイミング</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">最初は全部のテキストが頭から表示された状態です。後から出したい文字は、バー上でドラッグして表示の開始位置をずらします。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">下のバーで、テキストの帯を<b>左右にドラッグ</b>して表示の開始位置を決める</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">帯の<b>端を伸ばし縮み</b>して、表示し続ける長さを調整する</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🔍</span>
+        <span><b>ヒント：</b>編集バーが見にくい時は、紫の線（境目）をドラッグすると編集エリアを広げられます。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ 素材・アニメーション -->
+  <div class="step-card anim">
+    <div class="step-header">
+      <div class="step-num">07</div>
+      <div class="step-title-block">
+        <div class="step-title">素材を挿入してアニメーションをつける</div>
+        <div class="step-subtitle">動く飾りで華やかに</div>
+      </div>
+      <span class="step-badge badge-anim">アニメーション</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">「素材」→「イラスト」で好きな素材（例：妖精）を配置する</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">素材を選択し <b>「アニメーション」→「アニメーション作成」</b> で動かしたい方向にドラッグ</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">動きのスタイルを<b>「スムーズ」</b>などに調整する</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🧚</span>
+        <span><b>ヒント：</b>素材が文字に重なる時は、素材を上下にドラッグすると前後の順番（重なり）を入れ替えられます。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ 音声 -->
+  <div class="step-card voice">
+    <div class="step-header">
+      <div class="step-num">08</div>
+      <div class="step-title-block">
+        <div class="step-title">ナレーション／AI音声で声を追加</div>
+        <div class="step-subtitle">自分の声 or AIボイス</div>
+      </div>
+      <span class="step-badge badge-voice">音声</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">声を入れると一気にリールらしくなります。自分で録音するか、声出しに抵抗があればAI音声を使えます。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">「素材」→<b>「オーディオ」</b>を開く</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text"><b>「ナレーションを収録」</b>で録音する（録り直しはゴミ箱でやり直し）</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">声出しが苦手なら <b>「AI音声を生成」</b> にテキストを貼り、好きなボイスを選ぶ（無料）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨ 音楽 -->
+  <div class="step-card music">
+    <div class="step-header">
+      <div class="step-num">09</div>
+      <div class="step-title-block">
+        <div class="step-title">音楽（BGM）を追加する</div>
+        <div class="step-subtitle">雰囲気に合う音源を</div>
+      </div>
+      <span class="step-badge badge-music">BGM</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">「素材」→<b>「オーディオ」</b>で「カフェ」などと検索する</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">気に入った音源をドラッグして追加する（王冠マークは有料）</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">動画の元音が邪魔なら、動画を選択し <b>「音量」→ミュート</b> にする</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑩ ダウンロード -->
+  <div class="step-card export">
+    <div class="step-header">
+      <div class="step-num">10</div>
+      <div class="step-title-block">
+        <div class="step-title">MP4形式でダウンロードする</div>
+        <div class="step-subtitle">完成した動画を書き出す</div>
+      </div>
+      <span class="step-badge badge-export">書き出し</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">画面右上の <b>「共有」</b> をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text"><b>「ダウンロード」</b> を選ぶ</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">ファイルの種類を <b>「MP4形式の動画」</b> にしてダウンロードする</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">📲</span>
+        <span><b>スマホで投稿するなら：</b>同じアカウントでスマホのCanvaを開けばデータが共有されているので、スマホ側でダウンロードしてそのままInstagram・TikTokに投稿できます。</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <hr>
+  <p>全10ステップお疲れ様でした！Canvaは1〜2分の短い動画づくりが得意です。慣れたら自分の素材でも作ってみましょう。</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「推し」を発信するワークフロー ｜ 6月Instagramコース</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Instagram-inspired purple / magenta theme */
+    --green-900: #7a1f6e;
+    --green-700: #a02d8c;
+    --green-500: #c13584;
+    --green-300: #e890c2;
+    --green-100: #fce0ef;
+    --green-50:  #fdf4f9;
+    --ink:       #2a1f28;
+    --ink-soft:  #5b4a56;
+    --muted:     #8a7a86;
+    --line:      #efe1ea;
+    --bg:        #fdfafc;
+    --white:     #ffffff;
+    --accent:    #ffb703;
+    --rose:      #e63946;
+    --rose-soft: #fde2e4;
+    --code-bg:   #f7f4f6;
+    --shadow:    0 1px 2px rgba(122,31,110,.04), 0 8px 24px rgba(122,31,110,.06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    margin: 0;
+    font-family: 'Zen Kaku Gothic New', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.75;
+    font-feature-settings: "palt";
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: linear-gradient(115deg, #405DE6 0%, #5B51D8 16%, #833AB4 34%, #C13584 52%, #E1306C 68%, #F56040 86%, #FCAF45 100%);
+    color: var(--white);
+    padding: 56px 32px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: "";
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(255,255,255,.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: "";
+    position: absolute;
+    bottom: -40px; left: 10%;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-eyebrow {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    margin: 0 0 12px;
+    letter-spacing: 0.03em;
+  }
+  .header-sub {
+    font-size: clamp(14px, 1.6vw, 17px);
+    opacity: .85;
+    margin: 0;
+    max-width: 900px;
+  }
+  .header-sub .phrase { display: inline-block; }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: sticky; top: 0;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 14px 32px;
+    display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav a {
+    color: var(--ink-soft); text-decoration: none;
+    font-size: 13.5px; font-weight: 500;
+    padding: 8px 14px; border-radius: 8px;
+    white-space: nowrap; transition: all .2s;
+  }
+  .nav a:hover { background: var(--green-100); color: var(--green-900); }
+
+  /* ===== Main ===== */
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+  .section { margin-bottom: 64px; }
+  .section-label {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  }
+  .section-number {
+    width: 36px; height: 36px;
+    background: var(--green-700); color: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+  }
+  .section h2 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 24px; font-weight: 700; margin: 0;
+    color: var(--green-900); letter-spacing: 0.04em;
+  }
+  .section-lead {
+    color: var(--ink-soft);
+    margin: -8px 0 24px 48px;
+    font-size: 14.5px;
+  }
+
+  /* ===== Oshi Definition ===== */
+  .oshi-def {
+    background: linear-gradient(135deg, #fffef5 0%, #fff8e1 100%);
+    border: 1px solid #ffe082;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    display: flex; gap: 18px; align-items: flex-start;
+  }
+  .oshi-def-icon {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    background: #ffe082;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .oshi-def-label {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: #8d6e00;
+    margin: 4px 0 8px;
+  }
+  .oshi-def-text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+  .oshi-def-caution {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #ffe082;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .oshi-def-caution strong { color: #b07800; }
+
+  /* ===== Glossary ===== */
+  .glossary {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .glossary-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 15px; color: var(--green-900);
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--green-100);
+  }
+  .glossary dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px 24px;
+  }
+  .glossary div.term {
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .glossary dt {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--green-700);
+    font-size: 14px;
+    background: var(--green-50);
+    border: 1px solid var(--green-100);
+    padding: 2px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .glossary dd {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  /* ===== Inline term hint ===== */
+  .hint {
+    color: var(--muted);
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+
+  /* ===== Goal Banner ===== */
+  .goal-banner {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fde68a;
+    border-left: 6px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 28px;
+    margin-bottom: 16px;
+    display: flex; gap: 18px; align-items: flex-start;
+    box-shadow: 0 4px 16px rgba(255,183,3,.08);
+  }
+  .goal-banner-icon {
+    flex-shrink: 0;
+    width: 46px; height: 46px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .goal-banner-body { flex: 1; }
+  .goal-banner-label {
+    font-size: 11px; font-weight: 700;
+    color: #b07800; letter-spacing: 0.2em;
+    margin: 2px 0 6px;
+  }
+  .goal-banner-text {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 17px; font-weight: 700;
+    color: #78350f; margin: 0; line-height: 1.7;
+  }
+
+  /* ===== Condition Banner ===== */
+  .condition-banner {
+    background: linear-gradient(135deg, #fef2f2 0%, var(--rose-soft) 100%);
+    border: 1px solid #fbcfe8;
+    border-left: 6px solid var(--rose);
+    border-radius: 14px;
+    padding: 22px 28px;
+    margin-bottom: 28px;
+  }
+  .condition-banner-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--rose); letter-spacing: 0.2em;
+    margin: 0 0 12px;
+  }
+  .condition-list {
+    list-style: none; padding: 0; margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+  }
+  .condition-list li {
+    background: var(--white);
+    border: 1px solid #fbcfe8;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14.5px;
+    color: var(--ink);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .condition-list li .num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    background: var(--rose); color: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .condition-list li strong { color: var(--green-900); }
+
+  /* ===== Flow Map (overview) ===== */
+  .flow-map {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .flow-map-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 16px; color: var(--green-900);
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--green-100);
+  }
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    position: relative;
+  }
+  .flow-step {
+    text-align: center;
+    padding: 14px 8px;
+    background: var(--green-50);
+    border: 1px solid var(--green-100);
+    border-radius: 10px;
+    position: relative;
+    transition: all .2s;
+  }
+  .flow-step:hover {
+    background: var(--green-100);
+    transform: translateY(-2px);
+  }
+  .flow-step-num {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 11px;
+    color: var(--green-700);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .flow-step-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--green-900);
+    line-height: 1.4;
+  }
+  @media (max-width: 900px) {
+    .flow-steps { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .flow-steps { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ===== Phase Card ===== */
+  .phase {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .phase-head {
+    background: linear-gradient(135deg, var(--green-50) 0%, var(--white) 100%);
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .phase-num {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    background: var(--green-700); color: var(--white);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700; font-size: 18px;
+  }
+  .phase-titles { flex: 1; }
+  .phase-eyebrow {
+    font-size: 11px; font-weight: 700;
+    color: var(--green-500); letter-spacing: 0.2em;
+    margin: 0 0 2px;
+  }
+  .phase-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 19px; font-weight: 700;
+    color: var(--green-900); margin: 0;
+  }
+  .phase-time {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .phase-body { padding: 24px 28px 28px; }
+  .phase-block + .phase-block { margin-top: 22px; }
+  .phase-block-label {
+    display: inline-block;
+    font-size: 12px; font-weight: 700;
+    color: var(--green-700);
+    background: var(--green-100);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+  .phase-block-label.output {
+    background: #fce0ef; color: var(--green-700);
+  }
+  .phase-block-label.ai {
+    background: #ede9fe; color: #6b46c1;
+  }
+  .phase-text {
+    margin: 0 0 8px;
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  .phase-list {
+    margin: 0; padding: 0; list-style: none;
+  }
+  .phase-list li {
+    position: relative;
+    padding: 6px 0 6px 24px;
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+  .phase-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 4px; top: 6px;
+    color: var(--green-500);
+    font-weight: 700;
+  }
+  .phase-list li strong { color: var(--green-900); }
+
+  /* ===== AI Prompt Box ===== */
+  .ai-prompt {
+    background: var(--code-bg);
+    border: 1px dashed var(--green-300);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', 'Zen Kaku Gothic New', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.8;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .ai-prompt .placeholder {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  /* ===== Copy Button ===== */
+  .ai-prompt-wrap { margin-top: 4px; }
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-700);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background .2s, transform .1s;
+  }
+  .copy-btn:hover { background: var(--green-900); }
+  .copy-btn:active { transform: scale(.97); }
+  .copy-btn.copied { background: var(--green-500); }
+
+  /* ===== Easy Version Box ===== */
+  .easy-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe;
+    border-left: 5px solid #3b82f6;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 16px;
+  }
+  .easy-label {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d4ed8;
+    margin: 0 0 8px;
+  }
+  .easy-text { margin: 0 0 14px; font-size: 14.5px; line-height: 1.8; }
+  .easy-text strong { color: #1d4ed8; }
+  .easy-steps { display: grid; gap: 8px; }
+  .easy-step {
+    background: #fff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .easy-num {
+    flex-shrink: 0;
+    background: #3b82f6; color: #fff;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 12px; border-radius: 999px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    white-space: nowrap;
+  }
+  .easy-note {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: #1e40af;
+  }
+
+  /* ===== Output Box ===== */
+  .output-box {
+    background: #fce0ef;
+    border-left: 3px solid var(--green-500);
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--green-900);
+    font-weight: 500;
+  }
+
+  /* ===== 3 Reels grid ===== */
+  .reels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .reel-card {
+    background: var(--green-50);
+    border: 1px solid var(--green-100);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+  }
+  .reel-card .reel-num {
+    position: absolute;
+    top: -10px; left: 12px;
+    background: var(--green-700); color: var(--white);
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 999px;
+    letter-spacing: 0.1em;
+  }
+  .reel-card h5 {
+    font-size: 14.5px; font-weight: 700;
+    color: var(--green-900);
+    margin: 8px 0 6px;
+  }
+  .reel-card p {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  /* ===== Oshi Examples ===== */
+  .oshi-examples {
+    background: linear-gradient(135deg, var(--white) 0%, #f5f0ff 100%);
+    border: 1px solid #e9d5ff;
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .oshi-examples h3 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 17px;
+    color: #6b46c1;
+    margin: 0 0 16px;
+  }
+  .oshi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .oshi-card {
+    background: var(--white);
+    border: 1px solid #ede9fe;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .oshi-cat {
+    font-size: 11px;
+    color: #6b46c1;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .oshi-card ul {
+    margin: 0; padding: 0; list-style: none;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+  }
+  .oshi-card li::before {
+    content: "・";
+    color: #a78bfa;
+  }
+
+  /* ===== Closing ===== */
+  .closing {
+    background: linear-gradient(120deg, #833AB4 0%, #C13584 50%, #F56040 100%);
+    color: var(--white);
+    border-radius: 20px;
+    padding: 36px 40px;
+    text-align: center;
+  }
+  .closing h3 {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 22px; margin: 0 0 12px;
+  }
+  .closing p {
+    margin: 0; font-size: 15px;
+    opacity: .9; line-height: 1.85;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 640px) {
+    main { padding: 32px 20px 60px; }
+    .header { padding: 40px 20px 48px; }
+    .phase-head { flex-wrap: wrap; padding: 18px 20px; }
+    .phase-body { padding: 20px; }
+    .phase-time { order: 3; margin-top: 4px; }
+    .closing { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <span class="header-eyebrow">2026年6月　Instagramコース</span>
+    <h1>「推し」を発信するワークフロー</h1>
+    <p class="header-sub"><span class="phrase">コース目標を達成するための、7つのステップ。</span><span class="phrase">自分の「好き」という気持ちを出発点に、少しずつファンを増やしていく進め方です。</span></p>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#overview">概要</a>
+    <a href="#phase1">①推しを決める</a>
+    <a href="#phase2">②ターゲット</a>
+    <a href="#phase3">③導線設計</a>
+    <a href="#phase4">④アカウント設計</a>
+    <a href="#phase5">⑤リール企画</a>
+    <a href="#phase6">⑥制作・投稿</a>
+    <a href="#phase7">⑦観察・改善</a>
+    <a href="#oshi">推しの例</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ===== 概要 ===== -->
+  <section class="section" id="overview">
+    <div class="section-label">
+      <div class="section-number">0</div>
+      <h2>はじめに ｜ ゴールと言葉の確認</h2>
+    </div>
+
+    <div class="oshi-def">
+      <div class="oshi-def-icon">💛</div>
+      <div>
+        <p class="oshi-def-label">そもそも「推し」とは？</p>
+        <p class="oshi-def-text">人にすすめたいほど気に入っている、人物やモノのことです。<br>「これ、みんなにも知ってほしい！」と思える対象なら、人でもモノでも場所でも、なんでもOKです。</p>
+        <p class="oshi-def-caution">⚠️ 二次創作（好きな作品やキャラクターをもとに作ること）はありですが、<strong>著作権に注意すること</strong>。</p>
+      </div>
+    </div>
+
+    <div class="glossary">
+      <p class="glossary-title">📖 このシートに出てくる言葉（先に確認しておきましょう）</p>
+      <dl>
+        <div class="term"><dt>リール</dt><dd>Instagramの短い縦型動画のこと（最大90秒）。</dd></div>
+        <div class="term"><dt>導線（どうせん）</dt><dd>投稿を見た人が「ファンになる」までの道すじ。</dd></div>
+        <div class="term"><dt>AIプロンプト</dt><dd>Gemini／ChatGPT／ClaudeなどのAIに「お願いする文章」のこと。</dd></div>
+        <div class="term"><dt>インサイト</dt><dd>Instagramが教えてくれる数字（再生数・保存数など）。</dd></div>
+        <div class="term"><dt>プロフィール</dt><dd>アカウントの自己紹介ページ。名前・紹介文・投稿一覧が並ぶ場所。</dd></div>
+        <div class="term"><dt>フォロー</dt><dd>そのアカウントの投稿を、続けて見られるように登録すること。</dd></div>
+      </dl>
+    </div>
+
+    <div class="goal-banner">
+      <div class="goal-banner-icon">🎯</div>
+      <div class="goal-banner-body">
+        <p class="goal-banner-label">COURSE GOAL ｜ 受講後の到達目標</p>
+        <p class="goal-banner-text">自分のチャンネルを立ち上げて、リール投稿を3本以上アップする。1本は再生数50回を超える。</p>
+      </div>
+    </div>
+
+    <div class="condition-banner">
+      <p class="condition-banner-label">✦ 課題条件</p>
+      <ul class="condition-list">
+        <li>
+          <span class="num">1</span>
+          <div><strong>導線設計を作ること</strong><br>
+          <span style="font-size:13px;color:var(--ink-soft);">投稿を見た人が「ファンになる」までの道すじを、ゴールから逆に考えて組み立てる</span></div>
+        </li>
+        <li>
+          <span class="num">2</span>
+          <div><strong>推しのファンが増えること</strong><br>
+          <span style="font-size:13px;color:var(--ink-soft);">自分の「好き」を伝えて、同じように好きになってくれる人を生む</span></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="flow-map">
+      <p class="flow-map-title">▸ 7フェーズの全体像</p>
+      <div class="flow-steps">
+        <a href="#phase1" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 1</div>
+          <div class="flow-step-title">推しを<br>決める</div>
+        </a>
+        <a href="#phase2" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 2</div>
+          <div class="flow-step-title">ターゲットを<br>想像する</div>
+        </a>
+        <a href="#phase3" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 3</div>
+          <div class="flow-step-title">導線を<br>設計する</div>
+        </a>
+        <a href="#phase4" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 4</div>
+          <div class="flow-step-title">アカウントを<br>設計する</div>
+        </a>
+        <a href="#phase5" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 5</div>
+          <div class="flow-step-title">リール3本<br>企画</div>
+        </a>
+        <a href="#phase6" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 6</div>
+          <div class="flow-step-title">制作・<br>投稿</div>
+        </a>
+        <a href="#phase7" class="flow-step" style="text-decoration:none;">
+          <div class="flow-step-num">PHASE 7</div>
+          <div class="flow-step-title">観察・<br>改善</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 1 ===== -->
+  <section class="section" id="phase1">
+    <div class="section-label">
+      <div class="section-number">1</div>
+      <h2>推しを決める＆深掘る</h2>
+    </div>
+    <p class="section-lead">すべての出発点です。自分が「好き！」と思う気持ちの強さが、そのまま投稿の魅力になります。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">01</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 1</p>
+          <h3 class="phase-title">推しを決めて、魅力を言語化する</h3>
+        </div>
+        <span class="phase-time">⏱ 30〜60分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">人・モノ・場所・コンセプト、なんでもOK。「自分が3分熱く語れる」対象を1つ選び、なぜ好きかを言葉にします。</p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">考えるポイント</span>
+          <ul class="phase-list">
+            <li>友達に3分でその推しの魅力を伝えるなら、どう話す？</li>
+            <li>好きな理由を<strong>5つ以上</strong>書き出す（見た目／物語・背景／体験して楽しいところ／他にはない点／共感できる点）</li>
+            <li>自分の「好き」の強さは10段階で何点？　7点未満なら、別の推しに変えるのも手です</li>
+            <li>その推しを知らない人が、最初に「えっ、すごい」と驚くポイントは？</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <p class="phase-text" style="font-size:13.5px;color:var(--ink-soft);">下の文章を<span class="hint">（黄色の部分を自分の推しに置きかえて）</span>Gemini／ChatGPT／Claudeにそのまま貼り付けると、考えを整理する手伝いをしてくれます。</p>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt">私は<span class="placeholder">[推しの名前/対象]</span>が好きです。
+この推しの魅力を、次の5つの見方で言葉にしてください。
+①見た目 ②背景・物語 ③体験して楽しいところ
+④他にはない点 ⑤共感できる点
+それぞれ100字くらいでお願いします。</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">推し定義シート（推し名・好きな理由5つ・熱量スコア・一言で言うと？）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 2 ===== -->
+  <section class="section" id="phase2">
+    <div class="section-label">
+      <div class="section-number">2</div>
+      <h2>ターゲットを想像する</h2>
+    </div>
+    <p class="section-lead">「誰に届けたいか」が決まると、言葉づかいも投稿する時間帯も変わってきます。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">02</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 2</p>
+          <h3 class="phase-title">推しを好きになってくれそうな人を思い描く</h3>
+        </div>
+        <span class="phase-time">⏱ 30〜45分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">あなたの推しに「あ、これ好き」と反応してくれそうな人を、具体的な1人の人物として思い描きます。<span class="hint">（このイメージの人物像を「ターゲット」と呼びます）</span></p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">考えるポイント</span>
+          <ul class="phase-list">
+            <li>その人の<strong>年齢・仕事・暮らし方</strong>はどんな感じ？</li>
+            <li>Instagramを見るのはいつ？　朝？　通勤中？　夜寝る前？</li>
+            <li>その人が普段フォローしていそうなアカウントを3つ想像してみる</li>
+            <li>その人が思わず「いいね」したくなるのは、どんな瞬間？</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt"><span class="placeholder">[推し]</span>を好きになってくれそうな人物像を3パターン作ってください。
+それぞれ以下を含めてください。
+・年齢・性別・仕事 ・暮らし方
+・Instagramを見る時間帯やよく見るジャンル
+・その人が「フォローしたくなる」のはどんな時か</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">届けたい人物像を3パターン書き出し、その中からメインの1人を決める</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 3 ===== -->
+  <section class="section" id="phase3">
+    <div class="section-label">
+      <div class="section-number">3</div>
+      <h2>導線を設計する</h2>
+    </div>
+    <p class="section-lead"><strong>課題条件①</strong>。投稿を見た人が「ファンになる」までの道すじを、ゴールから逆に考えて組み立てます。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">03</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 3</p>
+          <h3 class="phase-title">「知る → 気になる → ファンになる」の道すじを作る</h3>
+        </div>
+        <span class="phase-time">⏱ 45〜60分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">「ファンが増えた状態」とはどんな状態かをはっきりさせて、そこにたどり着くまでの流れを順番に考えます。</p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">考えるポイント</span>
+          <ul class="phase-list">
+            <li><strong>「ファンが増えた」とは具体的に何？</strong>　フォローしてくれる？　投稿を保存してくれる？　お店に来てくれる？</li>
+            <li><strong>① 知ってもらう</strong>：リールでどう見つけてもらう？（動画の最初の3秒で何を見せる？）</li>
+            <li><strong>② 気になってもらう</strong>：プロフィールに来てくれた人に、何を伝える？</li>
+            <li><strong>③ ファンになってもらう</strong>：何をしてくれたら「ファン」と言える？</li>
+            <li>それぞれの場面に、<strong>次の行動へのお誘い</strong>（例：「フォローしてね」「保存してね」）は入っているか？</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt">Instagramで<span class="placeholder">[届けたい人]</span>を<span class="placeholder">[推し]</span>のファンにする道すじを、
+次の3ステップで考えてください。
+①知ってもらう（リール）：何を見せて、どんな反応を狙うか
+②気になってもらう（プロフィール）：何を伝えて、次の行動を促すか
+③ファンになってもらう（フォロー・保存）：何を約束すれば動いてもらえるか
+各ステップに「次の行動へのお誘いの言葉」も具体的に書いてください。</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">道すじの図（3ステップ × 各場面の工夫 × お誘いの言葉）＝これが「導線設計」です</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 4 ===== -->
+  <section class="section" id="phase4">
+    <div class="section-label">
+      <div class="section-number">4</div>
+      <h2>アカウントを設計する</h2>
+    </div>
+    <p class="section-lead">アカウントの第一印象を整えます。リールで来てくれた人がフォローするかは、ここで決まります。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">04</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 4</p>
+          <h3 class="phase-title">アカウント名・自己紹介・見た目を整える</h3>
+        </div>
+        <span class="phase-time">⏱ 45〜60分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">アカウントの「顔」を整えます。①覚えやすさ ②検索で見つけてもらいやすさ ③世界観の3つを意識します。</p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">考えるポイント</span>
+          <ul class="phase-list">
+            <li>アカウント名は<strong>覚えやすい？　検索で見つけてもらいやすい？</strong></li>
+            <li>自己紹介文を読むと「誰に・何を・なぜ届けたいか」が伝わるか</li>
+            <li>アイコンや色の雰囲気は、推しの世界観と合っているか</li>
+            <li>初めて来た人が「フォローしよう」と思う、3秒で伝わる決め手は何？</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt"><span class="placeholder">[推し]</span>を<span class="placeholder">[届けたい人]</span>に向けて発信するInstagramアカウントを考えます。
+①アカウント名の候補を10個（覚えやすく、検索されやすいもの）
+②自己紹介文を3パターン（150字以内、「フォローしてね」などのお誘いを含む）
+③全体の見た目の方向性（色・文字の雰囲気・世界観を表す言葉）
+を提案してください。</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">アカウント設計メモ（名前・自己紹介文・見た目のイメージ）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 5 ===== -->
+  <section class="section" id="phase5">
+    <div class="section-label">
+      <div class="section-number">5</div>
+      <h2>リール3本を企画する</h2>
+    </div>
+    <p class="section-lead">3本それぞれに「ちがう役割」を持たせると、ファンになるまでの道すじがうまく回ります。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">05</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 5</p>
+          <h3 class="phase-title">役割のちがう3本を企画する</h3>
+        </div>
+        <span class="phase-time">⏱ 60〜90分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">3本のリールに、それぞれちがう役割を持たせます。3本がチームのように補い合う形にします。</p>
+          <div class="reels-grid">
+            <div class="reel-card">
+              <span class="reel-num">REEL 01</span>
+              <h5>まず知ってもらう</h5>
+              <p>初めて見た人に「何これ？」と思わせる動画。最初の3秒が勝負。<strong>再生数50回はこの1本で狙います</strong>。</p>
+            </div>
+            <div class="reel-card">
+              <span class="reel-num">REEL 02</span>
+              <h5>もっと好きになってもらう</h5>
+              <p>推しの魅力を深く伝える動画。「もっと知りたい」と思わせて、プロフィールへ来てもらう。</p>
+            </div>
+            <div class="reel-card">
+              <span class="reel-num">REEL 03</span>
+              <h5>行動してもらう</h5>
+              <p>保存・フォロー・コメントを促す仕掛け入り。「気になる」を実際の行動に変える。</p>
+            </div>
+          </div>
+
+          <div class="easy-box">
+            <p class="easy-label">😊 むずかしく感じたら：まずはこれでOK！</p>
+            <p class="easy-text">役割分担がむずかしければ、深く考えなくて大丈夫。<strong>推しの「好きなところ」を3つ選んで、1つずつ動画にする</strong>だけでもしっかり伝わります。</p>
+            <div class="easy-steps">
+              <div class="easy-step"><span class="easy-num">1本目</span>いちばん見せたい「これが好き！」というところ</div>
+              <div class="easy-step"><span class="easy-num">2本目</span>「実はね…」という、ちょっと意外な魅力</div>
+              <div class="easy-step"><span class="easy-num">3本目</span>「みんなも試してみて」というおすすめポイント</div>
+            </div>
+            <p class="easy-note">▸ 慣れてきたら、上の「3つの役割」を意識すると、もっとファンが増えやすくなります。</p>
+          </div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">考えるポイント</span>
+          <ul class="phase-list">
+            <li>それぞれの動画の<strong>最初の3秒</strong>で、何を見せる？</li>
+            <li>音楽・テンポ・長さ（15秒？　30秒？　60秒？）は届けたい人に合っているか</li>
+            <li>「保存したくなる」「友達に教えたくなる」要素は入っているか</li>
+            <li>3本まとめて見たとき、推しの全体像が伝わる流れになっているか</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt"><span class="placeholder">[推し]</span>を発信するInstagramリールを3本企画してください。
+1本目：まず知ってもらう（最初の3秒で目を引く）
+2本目：もっと好きになってもらう（魅力を深く伝える）
+3本目：行動してもらう（保存・フォローを促す）
+各リールに以下を含めてください。
+・タイトル ・最初の3秒で見せるもの ・場面の流れ
+・画面に出す文字の案 ・音楽の雰囲気 ・長さ（秒数）</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">リール3本の企画メモ（タイトル・最初の3秒・流れ・文字案・音楽の雰囲気）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 6 ===== -->
+  <section class="section" id="phase6">
+    <div class="section-label">
+      <div class="section-number">6</div>
+      <h2>制作・投稿する</h2>
+    </div>
+    <p class="section-lead">企画ができていれば、制作は「型に当てはめる」作業です。完璧をめざすより、まず公開を優先しましょう。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">06</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 6</p>
+          <h3 class="phase-title">Canvaやアプリで作って投稿する</h3>
+        </div>
+        <span class="phase-time">⏱ 1本あたり1〜2時間</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">Canvaや、Instagramの編集機能・動画を作るAIを使って、企画メモのとおりに動画を作ります。投稿は、届けたい人がスマホを見ていそうな時間に合わせます。</p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">制作チェックリスト</span>
+          <ul class="phase-list">
+            <li><strong>最初の3秒</strong>で「お、見てみたい」と思わせる引きがあるか</li>
+            <li>音を消していても内容が分かる<strong>字幕（文字）</strong>が入っているか</li>
+            <li>音楽は、流行りの曲か、推しの雰囲気に合うものを選ぶ</li>
+            <li>投稿の説明文（キャプション）は、最初の2行で要点＋お誘いを書く</li>
+            <li>ハッシュタグ<span class="hint">（#をつけた検索用のキーワード）</span>は、推し関連とジャンル系を混ぜる</li>
+            <li>投稿時間は、届けたい人が見ていそうな時間帯（朝7〜8時／昼12〜13時／夜20〜22時など）</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例（説明文づくり）</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt">次のリール内容に合わせて、Instagramの説明文を3パターン作ってください。
+リール内容：<span class="placeholder">[動画の内容を貼る]</span>
+届けたい人：<span class="placeholder">[Phase2で決めた人物像]</span>
+目的：保存・フォローしてもらう
+条件：最初の2行で要点＋お誘い、絵文字は控えめ、150字以内。
+あわせてハッシュタグ10個（推し関連5＋ジャンル系5）も提案してください。</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">投稿したリール3本（説明文・ハッシュタグ・投稿した時間をメモ）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Phase 7 ===== -->
+  <section class="section" id="phase7">
+    <div class="section-label">
+      <div class="section-number">7</div>
+      <h2>観察・改善する</h2>
+    </div>
+    <p class="section-lead">投稿して終わりではありません。数字を見て「次はどうするか」を考えるところまでが課題です。</p>
+
+    <div class="phase">
+      <div class="phase-head">
+        <div class="phase-num">07</div>
+        <div class="phase-titles">
+          <p class="phase-eyebrow">PHASE 7</p>
+          <h3 class="phase-title">数字を見て、振り返る</h3>
+        </div>
+        <span class="phase-time">⏱ 30〜45分</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-block">
+          <span class="phase-block-label">やること</span>
+          <p class="phase-text">投稿してから3〜7日後に、Instagramが教えてくれる数字（インサイト）を確認します。何がうまくいったか、何がいまひとつだったかを振り返ります。</p>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label">見るポイント</span>
+          <ul class="phase-list">
+            <li><strong>再生数</strong>：50回を超えたリールはどれ？　何がちがった？</li>
+            <li><strong>どこまで見られたか</strong>：何秒くらいで見るのをやめられている？　最初の引きは効いた？</li>
+            <li><strong>保存・シェアの数</strong>：「役に立った」と思ってもらえた証拠になります</li>
+            <li><strong>プロフィールに来た人のうち、フォローした人の割合</strong>：道すじ（導線）はうまく働いた？</li>
+            <li>コメントやメッセージの内容：ファンの「声」を拾えているか</li>
+          </ul>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label ai">🤖 AIプロンプト例</span>
+          <div class="ai-prompt-wrap"><button class="copy-btn" type="button" onclick="copyPrompt(this)"><span aria-hidden="true">📋</span> プロンプトをコピー</button><pre class="ai-prompt">私のInstagramリール3本の数字を見て、アドバイスをください。
+リール1：再生数<span class="placeholder">[数字]</span>、保存<span class="placeholder">[数字]</span>、最後まで見られた割合<span class="placeholder">[%]</span>
+リール2：（同じように記入）
+リール3：（同じように記入）
+次のことを教えてください。
+①いちばん伸びたリールが、なぜうまくいったのか
+②伸びなかったリールをどう直せばよいか
+③次に投稿するなら、どんな企画がよいか（3案）</pre></div>
+        </div>
+
+        <div class="phase-block">
+          <span class="phase-block-label output">アウトプット</span>
+          <div class="output-box">振り返りメモ（数字・気づいたこと・次にやること3案）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Oshi Examples ===== -->
+  <section class="section" id="oshi">
+    <div class="section-label">
+      <div class="section-number">+</div>
+      <h2>「推し」の例 ｜ アイデア出しのヒント</h2>
+    </div>
+    <p class="section-lead">推し選びに迷ったら、自分の日常から「3分以上熱く語れる」ものを探してみてください。</p>
+
+    <div class="oshi-examples">
+      <h3>💜 こんなものも「推し」になります</h3>
+      <div class="oshi-grid">
+        <div class="oshi-card">
+          <p class="oshi-cat">👤 人</p>
+          <ul>
+            <li>応援している作家・アーティスト</li>
+            <li>地元の職人・お店の店主</li>
+            <li>背中を追う先輩・恩師</li>
+            <li>子どもや家族の挑戦</li>
+          </ul>
+        </div>
+        <div class="oshi-card">
+          <p class="oshi-cat">📦 モノ</p>
+          <ul>
+            <li>使い込んでいる道具・文房具</li>
+            <li>地元のパン屋の看板商品</li>
+            <li>愛用しているガジェット</li>
+            <li>自分で育てている植物</li>
+          </ul>
+        </div>
+        <div class="oshi-card">
+          <p class="oshi-cat">📍 場所</p>
+          <ul>
+            <li>行きつけの銭湯・古本屋</li>
+            <li>誰にも教えたくない散歩道</li>
+            <li>地元の隠れた絶景スポット</li>
+            <li>通うカフェの一席</li>
+          </ul>
+        </div>
+        <div class="oshi-card">
+          <p class="oshi-cat">💡 コンセプト</p>
+          <ul>
+            <li>朝活・サウナ・推し活</li>
+            <li>北海道の四季・冬の過ごし方</li>
+            <li>ミニマル/丁寧な暮らし</li>
+            <li>ペットとの日常</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Closing ===== -->
+  <section class="section">
+    <div class="closing">
+      <h3>🌱 完璧をめざすより、まず1本</h3>
+      <p>すべてのステップを丁寧にやることよりも、<br>「自分の好きを伝える」1本を投稿してみることのほうが大事です。<br>3本投稿してから、Phase 7で少しずつ良くしていきましょう。<br>うまくいかなくて当たり前。最初はみんな初心者です。</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 株式会社PLATINUM ZONE ｜ 6月Instagramコース 課題ワークフロー
+</footer>
+
+<script>
+function copyPrompt(btn) {
+  var wrap = btn.closest('.ai-prompt-wrap');
+  var pre = wrap.querySelector('.ai-prompt');
+  var text = pre.innerText;
+  function done() {
+    if (!btn.dataset.orig) btn.dataset.orig = btn.innerHTML;
+    btn.innerHTML = '\u2713 \u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f';
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.innerHTML = btn.dataset.orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); if (cb) cb(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>実習：Canvaで投稿用画像をつくろう</title>
+<style>
+  :root {
+    --bg: #090c18;
+    --surface: #101528;
+    --card: #141a30;
+    --border: #232c4a;
+    --accent: #818cf8;
+    --accent2: #38bdf8;
+    --text: #e9ecfb;
+    --text-sub: #9aa4cc;
+    --text-muted: #5f6896;
+    --step-num: #1a2240;
+
+    --c-ai:     #818cf8;
+    --c-new:    #38bdf8;
+    --c-folder: #2dd4bf;
+    --c-photo:  #fb923c;
+    --c-edit:   #f472b6;
+    --c-text:   #c084fc;
+    --c-frame:  #4ade80;
+    --c-thanks: #facc15;
+    --c-export: #60a5fa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(135deg, #131b3d 0%, #090c18 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(129,140,248,0.20) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(129,140,248,0.12);
+    border: 1px solid rgba(129,140,248,0.3);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: clamp(20px, 5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 13.5px;
+    color: var(--text-sub);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* ─── GOAL + PREP ─── */
+  .meta-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 540px) {
+    .meta-section { grid-template-columns: 1fr; }
+  }
+  .meta-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .meta-card h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .goal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13.5px;
+    color: var(--text-sub);
+    margin-bottom: 7px;
+  }
+  .goal-item:last-child { margin-bottom: 0; }
+  .goal-check {
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .meta-card p { font-size: 13.5px; color: var(--text-sub); }
+  .meta-card .note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 0 5px 5px 0;
+  }
+
+  /* ─── PREP BOX ─── */
+  .prep-section {
+    max-width: 720px;
+    margin: 16px auto 0;
+    padding: 0 20px;
+  }
+  .prep-box {
+    background: linear-gradient(135deg, rgba(129,140,248,0.08), rgba(56,189,248,0.06));
+    border: 1px solid rgba(129,140,248,0.25);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .prep-text { flex: 1; min-width: 200px; }
+  .prep-text h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .prep-text p { font-size: 13px; color: var(--text-sub); }
+  .video-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(129,140,248,0.15);
+    border: 1px solid rgba(129,140,248,0.35);
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .video-btn:hover { background: rgba(129,140,248,0.28); }
+
+  /* ─── STEPS ─── */
+  .steps-area {
+    max-width: 720px;
+    margin: 36px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .step-card:hover { border-color: rgba(129,140,248,0.3); }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--step-num);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .step-title-block { flex: 1; }
+  .step-title {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+  .step-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .step-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  .badge-ai     { background: rgba(129,140,248,0.12); color: var(--c-ai);     border: 1px solid rgba(129,140,248,0.25); }
+  .badge-new    { background: rgba(56,189,248,0.10);  color: var(--c-new);    border: 1px solid rgba(56,189,248,0.25); }
+  .badge-folder { background: rgba(45,212,191,0.10);  color: var(--c-folder); border: 1px solid rgba(45,212,191,0.25); }
+  .badge-photo  { background: rgba(251,146,60,0.10);  color: var(--c-photo);  border: 1px solid rgba(251,146,60,0.25); }
+  .badge-edit   { background: rgba(244,114,182,0.10); color: var(--c-edit);   border: 1px solid rgba(244,114,182,0.25); }
+  .badge-text   { background: rgba(192,132,252,0.10); color: var(--c-text);   border: 1px solid rgba(192,132,252,0.25); }
+  .badge-frame  { background: rgba(74,222,128,0.10);  color: var(--c-frame);  border: 1px solid rgba(74,222,128,0.25); }
+  .badge-thanks { background: rgba(250,204,21,0.10);  color: var(--c-thanks); border: 1px solid rgba(250,204,21,0.25); }
+  .badge-export { background: rgba(96,165,250,0.10);  color: var(--c-export); border: 1px solid rgba(96,165,250,0.25); }
+
+  .step-card.ai     { border-left: 3px solid var(--c-ai); }
+  .step-card.new    { border-left: 3px solid var(--c-new); }
+  .step-card.folder { border-left: 3px solid var(--c-folder); }
+  .step-card.photo  { border-left: 3px solid var(--c-photo); }
+  .step-card.edit   { border-left: 3px solid var(--c-edit); }
+  .step-card.text   { border-left: 3px solid var(--c-text); }
+  .step-card.frame  { border-left: 3px solid var(--c-frame); }
+  .step-card.thanks { border-left: 3px solid var(--c-thanks); }
+  .step-card.export { border-left: 3px solid var(--c-export); }
+
+  .step-body {
+    padding: 14px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step-desc { font-size: 13.5px; color: var(--text-sub); }
+
+  /* operations list */
+  .op-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .op-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+  }
+  .op-step-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(129,140,248,0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .op-text { font-size: 13.5px; color: var(--text-sub); }
+  .op-text b { color: var(--text); font-weight: 700; }
+
+  /* tip box */
+  .tip-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    color: var(--text-sub);
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+  }
+  .tip-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .tip-box b { color: var(--accent); }
+
+  /* prompt box */
+  .prompt-box {
+    background: rgba(56,189,248,0.05);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 9px;
+    padding: 13px 15px;
+  }
+  .prompt-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-new);
+    margin-bottom: 8px;
+  }
+  .prompt-text {
+    font-size: 12.5px;
+    color: var(--text-sub);
+    line-height: 1.75;
+    white-space: pre-line;
+    font-family: 'SF Mono', 'Consolas', monospace;
+  }
+  .prompt-text .ph {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    max-width: 720px;
+    margin: 44px auto 0;
+    padding: 0 20px 48px;
+    text-align: center;
+  }
+  .footer hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .footer p { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Canva × Instagram 投稿画像</div>
+  <h1><span>Canva</span>で投稿用画像を<br>つくろう</h1>
+  <p class="hero-sub">AIで投稿テーマを考え、Canvaで1枚の投稿画像を仕上げます。写真の加工から文字入れまで、ひと通り体験しましょう。</p>
+</div>
+
+<!-- GOAL + NOTE -->
+<div class="meta-section">
+  <div class="meta-card">
+    <h2>🎯 実習の目的</h2>
+    <div class="goal-item"><span class="goal-check">✓</span><span>CanvaでInstagram用の1枚投稿画像を完成させる</span></div>
+    <div class="goal-item"><span class="goal-check">✓</span><span>AIを使って、投稿テーマとキャッチコピーを考える流れを体験する</span></div>
+  </div>
+  <div class="meta-card">
+    <h2>💡 進め方</h2>
+    <p>まずAIでネタを用意し、Canvaで写真・文字を配置して仕上げます。タブレットかPCでの操作がおすすめです。</p>
+    <div class="note">Canvaは無料プランで進められます。一部「王冠マーク」付きの機能は有料です。</div>
+  </div>
+</div>
+
+<!-- PREP -->
+<div class="prep-section">
+  <div class="prep-box">
+    <div class="prep-text">
+      <h2>事前準備</h2>
+      <p>① Canvaにログインしておく。② Gemini または ChatGPT を開ける状態にしておく。③ 編集画面が小さいスマホよりも、タブレットかPCがおすすめです。参考動画も手元で開いておきましょう。</p>
+    </div>
+    <a class="video-btn" href="https://youtu.be/icCvGRU7Pjw?si=0JF5ed_fcrnKZuHC&t=74" target="_blank">▶ 参考動画を開く</a>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-area">
+
+  <!-- ① AIで投稿内容 -->
+  <div class="step-card ai">
+    <div class="step-header">
+      <div class="step-num">01</div>
+      <div class="step-title-block">
+        <div class="step-title">AIで投稿内容を考える</div>
+        <div class="step-subtitle">Gemini / ChatGPT でネタ出し</div>
+      </div>
+      <span class="step-badge badge-ai">AI活用</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">まずは投稿のテーマとキャッチコピーをAIに考えてもらいます。下のプロンプト例の〔　〕の部分を、自分の「推し」と「届けたい人」に書き換えて使ってもOKです。</p>
+      <div class="prompt-box">
+        <div class="prompt-label">プロンプト例</div>
+        <div class="prompt-text">〔<span class="ph">Apple Watch</span>〕を〔<span class="ph">知らない人</span>〕に紹介するInstagram投稿を1枚作ります。初心者にも伝わりやすい投稿テーマを出してください。
+それぞれに、①キャッチコピー ②画像に入れる短い説明文 ③投稿を見た人が「気になる」と思うポイント を提案してください。
+文字はInstagram画像に入れやすいように、短く分かりやすくしてください。</div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span><b>ポイント：</b>出てきた案がいまいちなら「もっとカジュアルに」「絵文字なしで」などと追加で指示すると、好みに近づきます。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 新規デザイン -->
+  <div class="step-card new">
+    <div class="step-header">
+      <div class="step-num">02</div>
+      <div class="step-title-block">
+        <div class="step-title">新規デザインを作成する</div>
+        <div class="step-subtitle">Instagram投稿（4:5）を選ぶ</div>
+      </div>
+      <span class="step-badge badge-new">サイズ選択</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">Canvaのトップ画面で <b>「SNS」</b> のアイコンをクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">サイズの一覧から <b>「Instagram投稿（4:5）」</b> を選ぶ</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">編集画面が開いたら準備完了</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">📐</span>
+        <span><b>なぜ4:5？：</b>縦長の4:5はフィード上で画面を大きく占めるので、目に留まりやすいサイズです。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ ファイル名・フォルダ -->
+  <div class="step-card folder">
+    <div class="step-header">
+      <div class="step-num">03</div>
+      <div class="step-title-block">
+        <div class="step-title">ファイル名をつけて整理する</div>
+        <div class="step-subtitle">あとで迷子にならないように</div>
+      </div>
+      <span class="step-badge badge-folder">整理</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">編集画面の上にあるファイル名の部分をクリックして、分かりやすい名前をつける</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">自分の「Instagram投稿」フォルダがあれば、そこへ移動しておく</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🗂️</span>
+        <span><b>ヒント：</b>Canvaは自動保存なので、保存ボタンは不要。フォルダ分けの癖をつけると「あのデータどこ？」を防げます。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 素材を配置 -->
+  <div class="step-card photo">
+    <div class="step-header">
+      <div class="step-num">04</div>
+      <div class="step-title-block">
+        <div class="step-title">写真素材を配置する</div>
+        <div class="step-subtitle">主役の写真と背景を置く</div>
+      </div>
+      <span class="step-badge badge-photo">素材配置</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">主役になる写真を置いて背景を消し、その後ろに別の背景画像を敷きます。自分の写真がなければ「素材」から探せます。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">左メニューの <b>「素材」</b> で「Apple Watch」などと検索し、主役の写真を配置する</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">写真を選択して <b>「背景除去」</b>（王冠マーク・有料）で背景を消す</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">背景にしたい画像を配置し、右クリック →「レイヤー」→<b>最背面へ移動</b>で後ろに送る</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🎨</span>
+        <span><b>世界観のコツ：</b>毎回同じ背景を使って主役だけ差し替えると、フィード全体のトーンが揃って統一感が出ます。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 編集（シャドウ） -->
+  <div class="step-card edit">
+    <div class="step-header">
+      <div class="step-num">05</div>
+      <div class="step-title-block">
+        <div class="step-title">写真に影をつける</div>
+        <div class="step-subtitle">背景となじませて見やすく</div>
+      </div>
+      <span class="step-badge badge-edit">写真編集</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">主役の写真が背景と同化して見えにくいときは、影をつけると立体感が出て見やすくなります。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">主役の写真を選択して <b>「編集」</b> をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">「エフェクト」→<b>「シャドウ」</b>を選ぶ</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text"><b>「ドロップ」</b>を選んで影をつける</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ テキスト -->
+  <div class="step-card text">
+    <div class="step-header">
+      <div class="step-num">06</div>
+      <div class="step-title-block">
+        <div class="step-title">テキストを入れる</div>
+        <div class="step-subtitle">AIで作ったコピーを配置</div>
+      </div>
+      <span class="step-badge badge-text">文字入れ</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">左メニューの <b>「テキスト」</b> →「テキストボックスを追加」をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">①で作ったキャッチコピーを入力し、四隅の丸をドラッグして大きさを調整</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">上の <b>「フォント」</b> から文字の書体を選ぶ</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🔤</span>
+        <span><b>フォントのコツ：</b>投稿ごとに変えず、アカウントで一貫した書体に。「今更聞けない」のような<b>引きのワード</b>を1つ足すとクリック率が上がります。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ フレーム・グリッド -->
+  <div class="step-card frame">
+    <div class="step-header">
+      <div class="step-num">07</div>
+      <div class="step-title-block">
+        <div class="step-title">フレーム・グリッドを使う</div>
+        <div class="step-subtitle">写真をきれいに収める</div>
+      </div>
+      <span class="step-badge badge-frame">レイアウト</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">「フレーム」は写真を丸や好きな形に切り抜く機能、「グリッド」は複数の写真をきれいに並べる機能です。写真をドラッグするだけで収まります。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">左メニューの <b>「素材」</b> から「フレーム」または「グリッド」を選んで配置</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">Apple Watchの写真を、フレーム／グリッドの上に<b>ドラッグ</b>して入れ込む</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🖼️</span>
+        <span><b>使い分け：</b>1枚を柔らかく見せたいなら「フレーム」、2〜3枚を並べたいなら「グリッド」が便利です。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ サンクスページ -->
+  <div class="step-card thanks">
+    <div class="step-header">
+      <div class="step-num">08</div>
+      <div class="step-title-block">
+        <div class="step-title">サンクスページを作る</div>
+        <div class="step-subtitle">フォロー率アップの一手</div>
+      </div>
+      <span class="step-badge badge-thanks">ページ追加</span>
+    </div>
+    <div class="step-body">
+      <p class="step-desc">最後に「最後まで見てくれてありがとう」のサンクスページを足すと、フォローにつながりやすくなります。テンプレートを使えば一瞬で作れます。</p>
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text"><b>「ページを追加」</b>で新しいページを足す</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text">左メニューの <b>「デザイン」</b> の検索窓に<b>「サンクス」</b>と入力</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">気に入ったテンプレートを配置し、フォント・色を他のページに合わせる</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑨ ダウンロード -->
+  <div class="step-card export">
+    <div class="step-header">
+      <div class="step-num">09</div>
+      <div class="step-title-block">
+        <div class="step-title">PNG形式でダウンロードする</div>
+        <div class="step-subtitle">完成した画像を保存</div>
+      </div>
+      <span class="step-badge badge-export">書き出し</span>
+    </div>
+    <div class="step-body">
+      <div class="op-list">
+        <div class="op-row"><span class="op-step-num">1</span><span class="op-text">画面右上の <b>「共有」</b> をクリック</span></div>
+        <div class="op-row"><span class="op-step-num">2</span><span class="op-text"><b>「ダウンロード」</b> を選ぶ</span></div>
+        <div class="op-row"><span class="op-step-num">3</span><span class="op-text">ファイルの種類を <b>「PNG」</b> にして「ダウンロード」をクリック</span></div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">📲</span>
+        <span><b>スマホで投稿するなら：</b>同じアカウントでスマホのCanvaアプリを開けばデータが共有されているので、スマホ側でダウンロードしてそのまま投稿できます。</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <hr>
+  <p>全9ステップお疲れ様でした！AIでネタ出し → Canvaで仕上げ、の流れが掴めれば、どんなテーマでも投稿画像が作れます。</p>
+</div>
+
+</body>
+</html>
