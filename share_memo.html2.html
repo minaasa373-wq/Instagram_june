@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chrome拡張機能のすすめ｜DXコース</title>
+<style>
+  :root{
+    --bg:#f3f7f4;
+    --surface:#ffffff;
+    --ink:#1f3329;
+    --ink-soft:#4a5d52;
+    --green:#2e7d57;
+    --green-deep:#1f5e40;
+    --green-light:#e3f1e9;
+    --green-line:#cfe5d8;
+    --accent:#f5a623;
+    --shadow:0 2px 14px rgba(31,94,64,.08);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ===== nav ===== */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--green-line);
+  }
+  .nav-inner{
+    max-width:880px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  }
+  .nav-logo{font-weight:800;color:var(--green-deep);font-size:1.05rem;letter-spacing:.02em;}
+  .nav-links{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;}
+  .nav-links a{
+    font-size:.82rem;font-weight:600;color:var(--ink-soft);
+    padding:6px 12px;border-radius:999px;text-decoration:none;transition:.2s;
+  }
+  .nav-links a:hover{background:var(--green-light);color:var(--green-deep);}
+
+  /* ===== layout ===== */
+  main{max-width:880px;margin:0 auto;padding:0 20px 80px;}
+
+  header.hero{
+    text-align:center;padding:56px 16px 40px;
+  }
+  .hero .eyebrow{
+    display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.14em;
+    color:var(--green);background:var(--green-light);
+    padding:6px 16px;border-radius:999px;margin-bottom:18px;
+  }
+  .hero h1{font-size:2rem;color:var(--green-deep);line-height:1.45;margin-bottom:14px;}
+  .hero p{font-size:1rem;color:var(--ink-soft);max-width:560px;margin:0 auto;}
+
+  section{margin-top:48px;}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+  .sec-head .bar{width:6px;height:26px;background:var(--green);border-radius:3px;}
+  .sec-head h2{font-size:1.3rem;color:var(--green-deep);}
+  .sec-head .sub{font-size:.8rem;color:var(--ink-soft);margin-left:auto;font-weight:600;}
+
+  /* ===== 概要 part ===== */
+  .intro-card{
+    background:var(--surface);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:26px 28px;border:1px solid var(--green-line);
+  }
+  .intro-card p{color:var(--ink-soft);}
+  .intro-card .lead{font-size:1.05rem;color:var(--ink);font-weight:600;margin-bottom:10px;}
+
+  .overview-grid{
+    display:grid;grid-template-columns:1fr;gap:16px;margin-top:8px;
+  }
+  @media(min-width:680px){.overview-grid{grid-template-columns:1fr 1fr 1fr;}}
+  .ov-card{
+    background:var(--surface);border-radius:var(--radius);
+    box-shadow:var(--shadow);border:1px solid var(--green-line);
+    padding:22px 20px;display:flex;flex-direction:column;gap:8px;
+    text-decoration:none;transition:.2s;
+  }
+  .ov-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(31,94,64,.14);}
+  .ov-num{
+    width:34px;height:34px;border-radius:9px;
+    background:var(--green);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:1rem;
+  }
+  .ov-card h3{font-size:1rem;color:var(--green-deep);}
+  .ov-card .tag{
+    font-size:.72rem;font-weight:700;color:var(--green);
+    background:var(--green-light);padding:3px 10px;border-radius:999px;
+    align-self:flex-start;
+  }
+  .ov-card p{font-size:.85rem;color:var(--ink-soft);}
+
+  /* ===== detail blocks ===== */
+  .detail{
+    background:var(--surface);border-radius:var(--radius);
+    box-shadow:var(--shadow);border:1px solid var(--green-line);
+    padding:0;overflow:hidden;margin-bottom:26px;
+  }
+  .detail-top{
+    padding:24px 28px 20px;border-bottom:1px solid var(--green-line);
+    background:linear-gradient(180deg,var(--green-light),#fff);
+  }
+  .detail-top .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .detail-top .badge{
+    width:42px;height:42px;border-radius:11px;background:var(--green);
+    color:#fff;font-weight:800;font-size:1.2rem;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .detail-top h3{font-size:1.2rem;color:var(--green-deep);}
+  .detail-top .meta{font-size:.76rem;color:var(--ink-soft);margin-top:2px;}
+  .detail-body{padding:22px 28px 26px;}
+  .detail-body .catch{
+    font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:14px;
+    padding-left:14px;border-left:4px solid var(--accent);
+  }
+  .detail-body p{color:var(--ink-soft);margin-bottom:14px;font-size:.92rem;}
+
+  .scene-title{
+    font-size:.82rem;font-weight:700;color:var(--green);
+    margin:18px 0 10px;display:flex;align-items:center;gap:7px;
+  }
+  .scene-title::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .scene-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .scene-list li{
+    background:var(--bg);border-radius:10px;padding:11px 15px;
+    font-size:.88rem;color:var(--ink);display:flex;gap:10px;align-items:flex-start;
+  }
+  .scene-list li .dot{color:var(--green);font-weight:800;flex-shrink:0;}
+
+  .howto{
+    margin-top:18px;background:var(--green-light);
+    border-radius:10px;padding:16px 18px;
+  }
+  .howto .h{font-size:.8rem;font-weight:700;color:var(--green-deep);margin-bottom:8px;}
+  .howto ol{margin-left:18px;}
+  .howto li{font-size:.86rem;color:var(--ink-soft);margin-bottom:4px;}
+
+  .store-btn{
+    display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+    background:var(--green);color:#fff;text-decoration:none;
+    font-size:.86rem;font-weight:700;padding:11px 20px;border-radius:999px;
+    transition:.2s;
+  }
+  .store-btn:hover{background:var(--green-deep);}
+
+  /* ===== safety / tip ===== */
+  .tip{
+    background:#fff8ec;border:1px solid #f3d9a4;border-radius:12px;
+    padding:16px 20px;font-size:.86rem;color:#7a5a1e;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .tip strong{color:#9c6a14;}
+
+  footer{
+    text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:.8rem;
+  }
+  footer .logo{font-weight:800;color:var(--green-deep);}
+
+  .install-note{
+    background:var(--surface);border:1px dashed var(--green-line);
+    border-radius:12px;padding:18px 22px;margin-top:14px;
+  }
+  .install-note .h{font-weight:700;color:var(--green-deep);margin-bottom:8px;font-size:.92rem;}
+  .install-note ol{margin-left:18px;}
+  .install-note li{font-size:.88rem;color:var(--ink-soft);margin-bottom:5px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">🧩 Chrome拡張機能のすすめ</span>
+    <div class="nav-links">
+      <a href="#overview">概要</a>
+      <a href="#install">導入手順</a>
+      <a href="#ext1">①Ctrl+Enter</a>
+      <a href="#ext2">②NotebookLM</a>
+      <a href="#ext3">③スクショ</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="hero">
+    <span class="eyebrow">DXコース｜便利ツール紹介</span>
+    <h1>作業がラクになる<br>Chrome拡張機能 3選</h1>
+    <p>「拡張機能」はChromeに小さな機能を追加できるアドオンです。今回は、AIやリサーチ作業が一気に快適になる、初心者にもやさしい3つを紹介します。</p>
+  </header>
+
+  <!-- ===== 概要パート ===== -->
+  <section id="overview">
+    <div class="sec-head">
+      <span class="bar"></span>
+      <h2>概要</h2>
+      <span class="sub">まずはここだけ読めばOK</span>
+    </div>
+
+    <div class="intro-card" style="margin-bottom:22px;">
+      <p class="lead">そもそも「拡張機能」って？</p>
+      <p>Chromeに後づけできる便利機能のことです。インストールすると、画面右上にアイコンが並び、ワンクリックで使えるようになります。今回の3つはすべて無料、設定もほぼ不要。「入れて終わり」ですぐ効果を実感できるものを選びました。</p>
+    </div>
+
+    <div class="overview-grid">
+      <a href="#ext1" class="ov-card">
+        <span class="ov-num">1</span>
+        <span class="tag">AIチャット向け</span>
+        <h3>Chat AI Ctrl+Enter Sender</h3>
+        <p>Enterキーでの誤送信を防止。長文を落ち着いて書けるようになります。</p>
+      </a>
+      <a href="#ext2" class="ov-card">
+        <span class="ov-num">2</span>
+        <span class="tag">リサーチ向け</span>
+        <h3>NotebookLM用 Web Clipper</h3>
+        <p>気になるページやYouTubeをワンクリックでNotebookLMに保存。</p>
+      </a>
+      <a href="#ext3" class="ov-card">
+        <span class="ov-num">3</span>
+        <span class="tag">画面キャプチャ</span>
+        <h3>GoFullPage</h3>
+        <p>ページ全体を1枚の画像にまるごと保存。資料づくりに大活躍。</p>
+      </a>
+    </div>
+
+    <div class="tip" style="margin-top:22px;">
+      <span>💡</span>
+      <div><strong>誰もが一度はやってる「Enter誤送信」</strong>。書きかけの文章をうっかり送信→AIが中途半端な内容で返答…。①の拡張機能を入れるだけで、この"あるある事故"がゼロになります。まず1つだけ試すなら、ここからがおすすめです。</div>
+    </div>
+  </section>
+
+  <!-- ===== 導入手順 ===== -->
+  <section id="install">
+    <div class="sec-head">
+      <span class="bar"></span>
+      <h2>導入手順（共通）</h2>
+      <span class="sub">どれも同じ流れ</span>
+    </div>
+    <div class="install-note">
+      <p class="h">インストールはたった3ステップ</p>
+      <ol>
+        <li>各拡張機能の「ストアを開く」ボタンをクリック</li>
+        <li>青い「Chromeに追加」ボタンを押す → 確認画面で「拡張機能を追加」</li>
+        <li>画面右上にアイコンが出たら完了。📌のピンマークで固定表示にしておくと便利です</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== 詳細パート ===== -->
+  <section id="detail">
+    <div class="sec-head">
+      <span class="bar"></span>
+      <h2>詳細</h2>
+      <span class="sub">使い方と活用シーン</span>
+    </div>
+
+    <!-- EXT 1 -->
+    <div class="detail" id="ext1">
+      <div class="detail-top">
+        <div class="row">
+          <span class="badge">1</span>
+          <div>
+            <h3>Chat AI Ctrl+Enter Sender</h3>
+            <div class="meta">ユーザー10万人｜★4.2｜完全無料｜データ収集なし</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <p class="catch">「Enterで送信」を「Ctrl+Enterで送信」に変えてくれる拡張機能</p>
+        <p>ChatGPTやClaude、Gemini、Copilotなどでは、Enterキーを押すとそのまま送信されてしまいます。改行のつもりが送信されてしまい、AIが書きかけの文章に返答してしまう…という経験、誰しもあるはず。</p>
+        <p>この拡張機能を入れると、<strong>Enter＝改行／Ctrl+Enter（MacはCmd+Enter）＝送信</strong>に切り替わります。長文プロンプトも、メールの下書きのように落ち着いて組み立てられます。</p>
+
+        <div class="scene-title">こんな場面で便利</div>
+        <ul class="scene-list">
+          <li><span class="dot">▶</span>AIに長めの指示や文章をじっくり書いて渡したいとき</li>
+          <li><span class="dot">▶</span>箇条書きや改行を使って、整理しながら質問したいとき</li>
+          <li><span class="dot">▶</span>「途中で送信しちゃった…」をなくして集中したいとき</li>
+        </ul>
+
+        <div class="howto">
+          <div class="h">使い方</div>
+          <ol>
+            <li>インストールするだけで自動で有効になります</li>
+            <li>アイコンをクリックすれば、サイトごとにオン／オフの切り替えも可能</li>
+          </ol>
+        </div>
+
+        <a class="store-btn" href="https://chromewebstore.google.com/detail/gbncgdhklmnckojlibfhdadpfbcdbnch" target="_blank" rel="noopener">🛒 ストアを開く</a>
+      </div>
+    </div>
+
+    <!-- EXT 2 -->
+    <div class="detail" id="ext2">
+      <div class="detail-top">
+        <div class="row">
+          <span class="badge">2</span>
+          <div>
+            <h3>NotebookLM用 Web Clipper</h3>
+            <div class="meta">ユーザー2万人｜★4.9｜Featured｜日本語対応</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <p class="catch">気になった情報を、ワンクリックでNotebookLMに集める</p>
+        <p>NotebookLMは、自分が集めた資料だけをもとにAIが要約・分析・質問回答をしてくれるGoogleのツールです。ただ、これまでは資料を集めるのにダウンロードやコピペが必要で、地味に手間でした。</p>
+        <p>このWeb Clipperを使えば、見ているWebページ・PDF・YouTube動画・AIチャットなどを、<strong>ボタン1つでNotebookLMに直接保存</strong>できます。集める作業の手間が消えるので、「読む・考える」に集中できます。</p>
+
+        <div class="scene-title">こんな場面で便利</div>
+        <ul class="scene-list">
+          <li><span class="dot">▶</span>調べものをしながら、参考ページをどんどんストックしたいとき</li>
+          <li><span class="dot">▶</span>YouTubeの解説動画やセミナーをまとめて教材にしたいとき</li>
+          <li><span class="dot">▶</span>arXivなどのPDF論文・記事をそのまま取り込みたいとき</li>
+          <li><span class="dot">▶</span>ChatGPTやClaudeとの会話を、後で見返せる資料として残したいとき</li>
+        </ul>
+
+        <div class="howto">
+          <div class="h">使い方</div>
+          <ol>
+            <li>保存したいページ・動画・PDFを開く</li>
+            <li>拡張機能アイコン（PDFやYouTubeでは画面上のボタン）をクリック</li>
+            <li>保存先のノートブックを選んで完了。あとはNotebookLMで要約や質問ができます</li>
+          </ol>
+        </div>
+
+        <a class="store-btn" href="https://chromewebstore.google.com/detail/ancgeemmgnlempppapnfkdpghghphgjb" target="_blank" rel="noopener">🛒 ストアを開く</a>
+      </div>
+    </div>
+
+    <!-- EXT 3 -->
+    <div class="detail" id="ext3">
+      <div class="detail-top">
+        <div class="row">
+          <span class="badge">3</span>
+          <div>
+            <h3>GoFullPage - Full Page Screen Capture</h3>
+            <div class="meta">ユーザー1,100万人｜★4.9｜Featured｜定番中の定番</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <p class="catch">スクロールが必要な長いページも、まるごと1枚に保存</p>
+        <p>普通のスクリーンショットは「今見えている範囲」しか撮れません。でもこの拡張機能なら、<strong>縦に長いページ全体を自動でスクロールしながら1枚の画像にまとめて</strong>くれます。</p>
+        <p>撮った画像は新しいタブに開き、PNG画像やPDFとしてダウンロードしたり、そのままデスクトップにドラッグ保存も可能。広告も余計な権限要求もなく、シンプルに使えます。</p>
+
+        <div class="scene-title">こんな場面で便利</div>
+        <ul class="scene-list">
+          <li><span class="dot">▶</span>記事やサイト全体を、証拠・記録として丸ごと残したいとき</li>
+          <li><span class="dot">▶</span>AIとの長い会話履歴を1枚にまとめて保存・共有したいとき</li>
+          <li><span class="dot">▶</span>Webページを資料やマニュアルに貼り付けたいとき</li>
+          <li><span class="dot">▶</span>PDF化して印刷・配布したいとき</li>
+        </ul>
+
+        <div class="howto">
+          <div class="h">使い方</div>
+          <ol>
+            <li>保存したいページを開く</li>
+            <li>アイコンをクリック（またはAlt+Shift+P）すると自動でスクロール＆撮影</li>
+            <li>新しいタブで開いた画像を、PNG／PDFで保存</li>
+          </ol>
+        </div>
+
+        <a class="store-btn" href="https://chromewebstore.google.com/detail/fdpohaocaechififmbbbbbknoalclacl" target="_blank" rel="noopener">🛒 ストアを開く</a>
+      </div>
+    </div>
+
+    <div class="tip">
+      <span>🔒</span>
+      <div><strong>安心ポイント：</strong>3つともChromeウェブストアの公式掲載アプリです。①と③は「データを収集しない」と明記。②はノートブックへの保存のため一部情報を扱いますが、第三者への販売はしないと宣言されています。気になる場合は、まず①Ctrl+Enter Senderから試してみてください。</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><span class="logo">DXコース</span> ｜ 便利ツール紹介資料</p>
+  <p style="margin-top:6px;">まずは1つ、入れてみるところから。"使ってみる"が一番の近道です 🚀</p>
+</footer>
+
+</body>
+</html>
